@@ -1,5 +1,5 @@
 {
-  description = "Cross compiling a rust program using rust-overlay";
+  description = "An rsync container image created using Nix";
 
   inputs = {
     flake-utils.url = "github:numtide/flake-utils";
