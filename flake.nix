@@ -10,7 +10,6 @@
     inputs.flake-utils.lib.eachDefaultSystem (system: let
       pkgs = import inputs.nixpkgs {
         inherit system;
-        overlays = [(import inputs.rust-overlay)];
       };
 
       container_x86_64 = pkgs.dockerTools.buildLayeredImage {
