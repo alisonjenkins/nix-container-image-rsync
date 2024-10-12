@@ -18,7 +18,7 @@
 
       rsync_world = {pkgs}:
         pkgs.writeShellScriptBin ''rsync_world'' ''
-          [ "$(ls -A $WORLD_PATH)" ] || ${pkgs.rsync}/bin/rsync -av "$WORLD_STATE_PATH/" "$WORLD_PATH/"
+          [ "$(${pkgs.coreutils}/bin/ls -A $WORLD_PATH)" ] || ${pkgs.rsync}/bin/rsync -av "$WORLD_STATE_PATH/" "$WORLD_PATH/"
         '';
 
       container_x86_64 = pkgs.dockerTools.buildLayeredImage {
