@@ -12,6 +12,15 @@
         inherit system;
       };
 
+      pkgs_arm64 = import inputs.nixpkgs {
+        system = "aarch64-linux";
+      };
+
+      rsync_world = {pkgs}:
+        pkgs.writeShellScriptBin ''rsync_world'' ''
+          [ "$(ls -A $WORLD_PATH)" ] && ${pkgs.rsync} -av "$WORLD_PATH" "$WORLD_STATE_PATH"
+        '';
+
       container_x86_64 = pkgs.dockerTools.buildLayeredImage {
         name = "rsync";
         tag = "latest-x86_64";
@@ -20,7 +29,7 @@
           name = "image-root";
           paths = with pkgs; [
             dockerTools.caCertificates
-            rsync
+            (rsync_world {inherit pkgs;})
           ];
           pathsToLink = ["/bin" "/etc" "/var"];
         };
@@ -34,7 +43,7 @@
           name = "image-root";
           paths = with pkgs.pkgsCross.aarch64-multiplatform; [
             dockerTools.caCertificates
-            rsync
+            (rsync_world {pkgs = pkgs_arm64;})
           ];
           pathsToLink = ["/bin" "/etc" "/var"];
         };
