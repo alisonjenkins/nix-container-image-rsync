@@ -18,7 +18,18 @@
 
       rsync_world = {pkgs}:
         pkgs.writeShellScriptBin ''rsync_world'' ''
-          [ "$(${pkgs.coreutils}/bin/ls -A $WORLD_PATH)" ] || ${pkgs.rsync}/bin/rsync -av "$WORLD_STATE_PATH/" "$WORLD_PATH/"
+          # check if the variable is defined
+          # if defined check if enabled and only rsync world if dest dir is empty
+          if [ -z ''${ONLY_SYNC_EMPTY+x}]; then
+            if [ "$ONLY_SYNC_EMPTY" == "true" ]; then
+              set -e
+              [ "$(${pkgs.coreutils}/bin/ls -A $WORLD_PATH)" ] || ${pkgs.rsync}/bin/rsync -av "$WORLD_STATE_PATH/" "$WORLD_PATH/"
+              set +e
+              exit 0
+            fi
+          fi
+
+          ${pkgs.rsync}/bin/rsync -av "$WORLD_STATE_PATH/" "$WORLD_PATH/"
         '';
 
       container_x86_64 = pkgs.dockerTools.buildLayeredImage {
